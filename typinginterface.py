@@ -4,6 +4,7 @@ graphical user interface for a typing practice program
 
 import math
 import json
+import os
 import contextlib
 
 with contextlib.redirect_stdout(None):
@@ -41,7 +42,14 @@ class TypingInterface:
 
     def __load_window_state(self) -> None:
         """load previous or default window state from file"""
-        with open("config/window_state.json", "r", encoding="utf-8") as file:
+        path = "config/window_state.json"
+        if not os.path.isfile(path):
+            self.__constants["windowed_size"] = (800, 640)
+            self.__fullscreen = False
+            self.__save_window_state()
+            return
+
+        with open(path, "r", encoding="utf-8") as file:
             window_state = json.loads(file.read())
         self.__constants["windowed_size"] = tuple(window_state["windowed_size"])
         self.__fullscreen = window_state["fullscreen"]
@@ -85,7 +93,7 @@ class TypingInterface:
 
     def __load_colours(self) -> None:
         """load colours from colours/config.json"""
-        with open("config/colours.json", "r", encoding="utf-8") as file:
+        with open("data/colours.json", "r", encoding="utf-8") as file:
             self.__colours = json.loads(file.read())
 
     def __load_fonts(self) -> None:
@@ -96,7 +104,6 @@ class TypingInterface:
 
     def __save_window_state(self) -> None:
         """save the current window state to a config file"""
-        print(self.__fullscreen)
         window_state = {
             "windowed_size": list(self.__constants["windowed_size"]),
             "fullscreen": self.__fullscreen,
