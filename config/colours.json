@@ -1,0 +1,7 @@
+{
+    "background": [69, 69, 69],
+    "active_background": [189, 189, 189],
+    "inactive_background": [127, 127, 127],
+    "active_foreground": [0, 0, 0],
+    "inactive_foreground": [30, 30, 30]
+}
