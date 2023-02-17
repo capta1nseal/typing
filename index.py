@@ -4,7 +4,7 @@
 pygame program for practicing typing
 
 text is read from a text file with a custom file browser
-the program evaluates the user's speed and accuracy while typing
+(planned: the program evaluates the user's speed and accuracy while typing)
 """
 
 from typinginterface import TypingInterface

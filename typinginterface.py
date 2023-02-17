@@ -26,6 +26,7 @@ class TypingInterface:
             "previous_line_position": None,
             "text_font_size": None,
         }
+        self.__load_window_state()
         self.__set_screen()
 
         self.__clock = pygame.time.Clock()
@@ -38,18 +39,26 @@ class TypingInterface:
             program = TypingProgram()
         self.__program = program
 
+    def __load_window_state(self) -> None:
+        """load previous or default window state from file"""
+        with open("config/window_state.json", "r", encoding="utf-8") as file:
+            window_state = json.loads(file.read())
+        self.__constants["windowed_size"] = tuple(window_state["windowed_size"])
+        self.__fullscreen = window_state["fullscreen"]
+
     def __set_screen(self) -> None:
         """set the __screen member to the appropriate pygame display mode"""
         if self.__fullscreen:
             self.__screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
             self.__constants["screen_size"] = self.__screen.get_size()
             self.__calculate_constants()
-            return
-        self.__screen = pygame.display.set_mode(
-            self.__constants["windowed_size"], pygame.RESIZABLE  # type: ignore
-        )
-        self.__constants["screen_size"] = self.__constants["windowed_size"]
-        self.__calculate_constants()
+        else:
+            self.__screen = pygame.display.set_mode(
+                self.__constants["windowed_size"], pygame.RESIZABLE
+            )
+            self.__constants["screen_size"] = self.__constants["windowed_size"]
+            self.__calculate_constants()
+        self.__save_window_state()
 
     def __toggle_fullscreen(self) -> None:
         """toggle between windowed and fullscreen"""
@@ -64,7 +73,7 @@ class TypingInterface:
         """calculate the graphical scaling constants"""
         self.__constants["line_size"] = (
             math.floor(self.__constants["screen_size"][0] * 0.75),
-            math.floor(self.__constants["screen_size"][0] * 0.75 / 10),
+            math.floor(self.__constants["screen_size"][0] * 0.075),
         )
         self.__constants["previous_line_position"] = (
             (self.__constants["screen_size"][0] - self.__constants["line_size"][0])
@@ -72,9 +81,7 @@ class TypingInterface:
             (self.__constants["screen_size"][1] - 3 * self.__constants["line_size"][1])
             // 2,
         )
-        self.__constants["text_font_size"] = self.__constants["screen_size"][1] // 10  # type: ignore
-
-        print(self.__constants)
+        self.__constants["text_font_size"] = self.__constants["screen_size"][1] // 10
 
     def __load_colours(self) -> None:
         """load colours from colours/config.json"""
@@ -85,21 +92,35 @@ class TypingInterface:
         """load fonts"""
         self.__text_font = pygame.font.Font(
             "fonts/Fira_Sans/FiraSans-Regular.ttf", self.__constants["text_font_size"]
-        )  # type: ignore
+        )
+
+    def __save_window_state(self) -> None:
+        """save the current window state to a config file"""
+        print(self.__fullscreen)
+        window_state = {
+            "windowed_size": list(self.__constants["windowed_size"]),
+            "fullscreen": self.__fullscreen,
+        }
+        with open("config/window_state.json", "w", encoding="utf-8") as file:
+            file.writelines(json.dumps(window_state, indent=4))
+
+    def __stop(self) -> None:
+        """stop typing program"""
+        self.__program.stop()
 
     def __handle_events(self) -> None:
         """handle pygame events"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.__program.stop()
+                self.__stop()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.__program.stop()
+                    self.__stop()
                 elif event.key == pygame.K_F11:
                     self.__toggle_fullscreen()
             elif event.type == pygame.VIDEORESIZE:
                 if not self.__fullscreen:
-                    self.__constants["windowed_size"] = event.size
+                    self.__constants["windowed_size"] = pygame.display.get_surface().get_size()
                 self.__set_screen()
 
     def __draw_backgrounds(self) -> None:
