@@ -11,6 +11,6 @@ from typinginterface import TypingInterface
 from typingprogram import TypingProgram
 
 typing_program = TypingProgram()
-typing_interface = TypingInterface(typing_program, False)
+typing_interface = TypingInterface(typing_program)
 
 typing_interface.run()

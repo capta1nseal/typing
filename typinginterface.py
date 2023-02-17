@@ -16,10 +16,9 @@ class TypingInterface:
     """graphical interface wrapper class for a typing practice program"""
 
     def __init__(
-        self, program: TypingProgram | None = None, fullscreen: bool = True
+        self, program: TypingProgram | None = None
     ) -> None:
         pygame.init()
-        self.__fullscreen = fullscreen
         self.__constants = {
             "windowed_size": (800, 640),
             "screen_size": None,
@@ -33,7 +32,6 @@ class TypingInterface:
         self.__clock = pygame.time.Clock()
 
         self.__load_colours()
-
         self.__load_fonts()
 
         if program is None:
