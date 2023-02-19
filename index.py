@@ -10,7 +10,9 @@ text is read from a text file with a custom file browser
 from typinginterface import TypingInterface
 from typingprogram import TypingProgram
 
-typing_program = TypingProgram()
-typing_interface = TypingInterface(typing_program)
 
-typing_interface.run()
+if __name__ == "__main__":
+    typing_program = TypingProgram()
+    typing_interface = TypingInterface(typing_program)
+
+    typing_interface.run()

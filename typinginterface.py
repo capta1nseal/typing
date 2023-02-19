@@ -19,8 +19,8 @@ class TypingInterface:
         self, program: TypingProgram | None = None
     ) -> None:
         pygame.init()
-        self.__constants = {
-            "windowed_size": (800, 640),
+        self.__constants: dict = {
+            "windowed_size": None,
             "screen_size": None,
             "line_size": None,
             "previous_line_position": None,
@@ -33,6 +33,8 @@ class TypingInterface:
 
         self.__load_colours()
         self.__load_fonts()
+
+        self.__update = True
 
         if program is None:
             program = TypingProgram()
@@ -57,14 +59,15 @@ class TypingInterface:
         if self.__fullscreen:
             self.__screen = pygame.display.set_mode(flags=pygame.FULLSCREEN)
             self.__constants["screen_size"] = self.__screen.get_size()
-            self.__calculate_constants()
         else:
             self.__screen = pygame.display.set_mode(
                 self.__constants["windowed_size"], pygame.RESIZABLE
             )
             self.__constants["screen_size"] = self.__constants["windowed_size"]
-            self.__calculate_constants()
+        self.__calculate_constants()
+        self.__load_fonts()
         self.__save_window_state()
+        self.__update = True
 
     def __toggle_fullscreen(self) -> None:
         """toggle between windowed and fullscreen"""
@@ -191,6 +194,8 @@ class TypingInterface:
         self.__program.start()
         while self.__program.running:
             self.__handle_events()
-            self.__draw()
+            if self.__update:
+                self.__draw()
+                self.__update = False
             self.__clock.tick(fps)
         pygame.quit()
