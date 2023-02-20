@@ -1,7 +1,3 @@
-"""
-graphical user interface for a typing practice program
-"""
-
 import math
 import json
 import os
@@ -9,16 +5,19 @@ import contextlib
 
 with contextlib.redirect_stdout(None):
     import pygame
+
+from fontmanager import FontManager
 from typingprogram import TypingProgram
 
 
 class TypingInterface:
-    """graphical interface wrapper class for a typing practice program"""
+    """graphical interface class for a typing practice program"""
 
     def __init__(
-        self, program: TypingProgram | None = None
+        self
     ) -> None:
         pygame.init()
+        self.__fullscreen = None
         self.__constants: dict = {
             "windowed_size": None,
             "screen_size": None,
@@ -36,9 +35,11 @@ class TypingInterface:
 
         self.__update = True
 
-        if program is None:
-            program = TypingProgram()
-        self.__program = program
+        self.__font_manager = FontManager(
+            "fonts/Fira_Sans/FiraSans-Regular.ttf",
+            self.__constants["text_font_size"]) # type: ignore
+
+        self.__program = TypingProgram(self.__font_manager)
 
     def __load_window_state(self) -> None:
         """load previous or default window state from file"""
@@ -191,6 +192,7 @@ class TypingInterface:
     def run(self) -> None:
         """main loop for running the program"""
         fps = 60
+        self.__program.load_file()
         self.__program.start()
         while self.__program.running:
             self.__handle_events()

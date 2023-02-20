@@ -1,11 +1,7 @@
-"""
-program for practicing typing
-"""
-
 import os
 import random
 
-
+from fontmanager import FontManager
 class TypingProgram:
     """
     program for practicing typing
@@ -13,13 +9,10 @@ class TypingProgram:
     this class just contains the back-end and requires a user interface
     """
 
-    def __init__(self, path: str | None = None) -> None:
-        if path is None:
-            self.__load_file()
-        else:
-            self.__load_file(path)
+    def __init__(self, font_manager: FontManager) -> None:
+        self.__font_manager = font_manager
 
-        self.__cursor = (0, 0)  # (line_number, character_number)
+        self.__cursor = (0, 0)  # (row_index, column_index)
         self.__running = False
 
     def start(self) -> None:
@@ -30,7 +23,7 @@ class TypingProgram:
         """stop program"""
         self.__running = False
 
-    def __load_file(
+    def load_file(
         self, path: str | None = None, default_folder_path: str = "samples"
     ) -> None:
         """load in a text file"""
